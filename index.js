@@ -26,10 +26,8 @@ const countyTables={
 }
 
 var obsQuery=(query)=>{
-  console.log("query is ", query)
   var format = 'json' 
   var url = `https://observatory.carto.com/api/v2/sql?q=${query}&format=${format}`
-  console.log('url is', url)
   var result = fetch(url)
                .then((res)=> res.json())
                .then((res)=>res.rows[0])
@@ -44,9 +42,13 @@ var fetchState = (state_name)=>{
 }
 
 
-var fetchCounty = (state_name)=>{
+var fetchCounty = (county_name)=>{
   console.log("trying to grab a county",county_name)
-  return obsQuery(`select  * from ${valTable} where geoid::NUMERIC=${state_name} `)
+  return obsQuery(`select  * from ${countyTables.valTable} where geoid::NUMERIC=${county_name} `)
+}
+
+var fetchCounties = (obj)=>{
+  console.log(obj['geoid'])
 }
 
 const StateType = new GraphQLObjectType({
@@ -65,10 +67,15 @@ const StateType = new GraphQLObjectType({
 			type:GraphQLInt,
 			description:"The total population of this region",
 			resolve: obj => obj.total_pop
-		}
-
+		},
+    counties:{
+      type: new GraphQLList(CountyType),
+      description: "Counties within a state",
+      resolve:(obj, args)=> fetchCounties(obj)
+    }
 	})
 })
+
 
 
 const CountyType = new GraphQLObjectType({
@@ -91,6 +98,17 @@ const CountyType = new GraphQLObjectType({
 	})
 })
 
+const CountyField ={
+  type: CountyType,
+	args:{
+		id: {type: new GraphQLNonNull(GraphQLID)},
+		name: {type: GraphQLString},
+	},
+  resolve: (root,args,context) => {
+    return fetchCounty(args["id"])
+  }
+}
+
 const QueryType = new GraphQLObjectType({
 	name: 'Query',
 	description:'The root of everything',
@@ -109,17 +127,7 @@ const QueryType = new GraphQLObjectType({
         return fetchState(args["id"])
       },
 		},
-
-    county:{
-			type: CountyType,
-			args:{
-				id: {type: new GraphQLNonNull(GraphQLID)},
-				name: {type: GraphQLString},
-			},
-      resolve: (root,args,context) => {
-        return fetchCounty(args["id"])
-      },
-		}
+    county: CountyField
 	})
 })
 
