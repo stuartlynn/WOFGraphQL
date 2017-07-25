@@ -2,6 +2,8 @@
 
 var _graphql = require('graphql');
 
+require('dotenv').config();
+
 var express = require('express');
 var graphqlHTTP = require('express-graphql');
 
@@ -9,6 +11,7 @@ var _require = require('graphql'),
     buildSchema = _require.buildSchema;
 
 var app = express();
+
 var stateNames = require('./stateNames');
 //const censusFields  = require('./censusFields")
 
@@ -19,20 +22,28 @@ var _require2 = require('./obsHelper'),
     fetchCounty = _require2.fetchCounty,
     fetchCounties = _require2.fetchCounties;
 
-getStateVariables().then(function (result) {
+var _require3 = require('./wofHelper'),
+    fetchWOF = _require3.fetchWOF,
+    WOFFields = _require3.WOFFields,
+    constructWOFTypesAndFields = _require3.constructWOFTypesAndFields,
+    WOFCommonArgs = _require3.WOFCommonArgs;
 
-	console.log("Have state variables", result);
+Promise.all([getStateVariables(), constructWOFTypesAndFields()]).catch(function (error) {
+	return console.log('ALL PROMISE ERROR', error);
+}).then(function (result) {
+
+	var WOFTypes = result[1].types;
+	var WOFFields = result[1].fields;
 
 	var CountyType = new _graphql.GraphQLObjectType({
 		name: 'County',
 		description: 'A County in the USA',
 		fields: function fields() {
-			return result;
+			return result[0];
 		}
 	});
 
-	var _fields = Object.assign(result, {
-
+	var _fields = Object.assign({}, result[0], {
 		counties: {
 			type: new _graphql.GraphQLList(CountyType),
 			description: "Counties within a state",
@@ -40,10 +51,7 @@ getStateVariables().then(function (result) {
 				return fetchCounties(obj);
 			}
 		}
-
 	});
-
-	console.log(_fields);
 
 	var StateType = new _graphql.GraphQLObjectType({
 		name: 'State',
@@ -64,29 +72,31 @@ getStateVariables().then(function (result) {
 		}
 	};
 
+	var DOFields = {
+		allStates: {
+			type: new _graphql.GraphQLList(StateType),
+			description: "All the states in the US"
+		},
+		state: {
+			type: StateType,
+			args: {
+				id: { type: _graphql.GraphQLInt },
+				name: { type: _graphql.GraphQLString },
+				lat: { type: _graphql.GraphQLFloat },
+				lng: { type: _graphql.GraphQLFloat }
+			},
+			resolve: function resolve(root, args, context) {
+				return fetchState(args);
+			}
+		},
+		county: CountyField
+	};
+
 	var QueryType = new _graphql.GraphQLObjectType({
 		name: 'Query',
 		description: 'The root of everything',
 		fields: function fields() {
-			return {
-				allStates: {
-					type: new _graphql.GraphQLList(StateType),
-					description: "All the states in the US"
-				},
-				state: {
-					type: StateType,
-					args: {
-						id: { type: _graphql.GraphQLInt },
-						name: { type: _graphql.GraphQLString },
-						lat: { type: _graphql.GraphQLFloat },
-						lng: { type: _graphql.GraphQLFloat }
-					},
-					resolve: function resolve(root, args, context) {
-						return fetchState(args);
-					}
-				},
-				county: CountyField
-			};
+			return Object.assign(DOFields, WOFFields);
 		}
 	});
 

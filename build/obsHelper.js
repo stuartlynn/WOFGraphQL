@@ -68,8 +68,6 @@ var fetchCounties = function fetchCounties(obj) {
 };
 
 var obsQuery = function obsQuery(query) {
-  console.log('running query');
-  console.log(query);
   var format = 'json';
   var cleanQuery = encodeURIComponent(query);
   var url = 'https://observatory.carto.com/api/v2/sql?q=' + cleanQuery + '&format=' + format;
