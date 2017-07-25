@@ -52,7 +52,6 @@ const colToField= (col)=>{
 var fetchCounty = (county_name)=>{
   return obsQuery(`select  * from ${countyTables.valTable} where geoid::NUMERIC=${county_name} `)
   .then((res)=>res.rows[0])
-
 }
 
 var fetchCounties = (obj)=>{
@@ -62,8 +61,6 @@ then((res)=> res.rows)
 
 
 const obsQuery=(query)=>{
-  console.log('running query')
-  console.log(query)
   var format = 'json' 
   var cleanQuery = encodeURIComponent(query)
   var url = `https://observatory.carto.com/api/v2/sql?q=${cleanQuery}&format=${format}`
