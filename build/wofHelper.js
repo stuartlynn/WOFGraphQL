@@ -287,8 +287,7 @@ var makeWOFType = function makeWOFType(name, description) {
 
 var getCommonPlacetypes = function getCommonPlacetypes() {
   var query = {
-    'method': 'whosonfirst.placetypes.getList',
-    'role': 'common'
+    'method': 'whosonfirst.placetypes.getList'
   };
   return WOFQuery(query).then(function (res) {
     return res.placetypes;

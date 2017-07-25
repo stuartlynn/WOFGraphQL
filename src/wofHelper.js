@@ -274,8 +274,7 @@ const makeWOFType = (name,description) => {
 
 const getCommonPlacetypes = ()=>{
   var query = {
-    'method' : 'whosonfirst.placetypes.getList',
-    'role'   : 'common'
+    'method' : 'whosonfirst.placetypes.getList'
   }
   return WOFQuery(query).then((res)=>res.placetypes)
 }
