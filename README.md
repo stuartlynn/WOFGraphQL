@@ -1,6 +1,6 @@
 # WOFGrpahQL
 
-This is a proof of concept for accessing [Who's On First](https://whosonfirst.mapzen.com/) with [GraphQL](http://graphql.org/)
+This is a proof of concept [GraphQL](http://graphql.org/) interface for [Who's On First](https://whosonfirst.mapzen.com/)
 
 Play with it on heroku( it's not backed by a paid dyno so it might be down when you try ....)
 
@@ -8,7 +8,7 @@ Play with it on heroku( it's not backed by a paid dyno so it might be down when 
 
 ## Instructions
 
-To run locally, put your `mapzen\_api\_key` in a .env file. Then simply do:
+To run locally, put your `mapzen_api_key` in a .env file. Then simply do:
 
 ```bash
 npm install
@@ -23,14 +23,13 @@ Then head to ```http://localhost:4000/graphql```
 
 ```
 {
-	locality(lat:40.7048504  lng: -73.9368162 ){
+  locality(lat:40.7048504  lng: -73.9368162 ){
     wof_name
-		geometry 	
-		neighbourhood{
+    geometry 	
+    neighbourhood{
       wof_name
       geom_area_square_meter
-
-    	microhood{
+      microhood{
         wof_name
       }
     }
@@ -43,7 +42,7 @@ Then head to ```http://localhost:4000/graphql```
 ```
 {
   neighbourhood(name:"Canarsie"){
-		wof_name
+    wof_name
     wof_children
     geometry
   }
@@ -56,7 +55,7 @@ Then head to ```http://localhost:4000/graphql```
 ```
 {
   macroregion(near:[42.274878 -2.517017] radius:200){
-		wof_name
+    wof_name
     wof_children
     parents {
       wof_id
