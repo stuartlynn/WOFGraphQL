@@ -73,3 +73,7 @@ Then head to ```http://localhost:4000/graphql```
 }
 
 ```
+## Next steps
+
+- [ ] Integrate with Census API to bring back census variables/geoms based on WOF regions
+- [ ] Build visual interface to view the results of the query
