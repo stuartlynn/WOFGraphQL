@@ -325,7 +325,6 @@ var fetchWOF = function fetchWOF(root, query, placetype) {
 };
 
 var fetchGeoJSON = function fetchGeoJSON(url) {
-  console.log('fetching geojson for ', id);
   return fetch(url).then(function (res) {
     return res.json();
   }).then(function (res) {

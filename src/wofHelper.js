@@ -304,7 +304,6 @@ const fetchWOF = (root,query,placetype)=>{
 }
 
 const fetchGeoJSON = (url)=>{
-  console.log('fetching geojson for ',id)
   return fetch(url).then((res) => res.json()).then((res)=>res['geometry']).then((res)=>{
     console.log(res)
     return res
