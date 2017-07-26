@@ -90,14 +90,19 @@ const WOFFields = {
     resolve:(obj) => obj['geom:bbox']
   },
   'git_url':{
-    description: 'latitude of the point',
+    description: 'Link to geojson on github',
     type: GraphQLString,
-    resolve:(obj) => resolveWOFURL(obj['wof:id'])
+    resolve:(obj) => resolveWOFGitHUbURL(obj['wof:id'])
+  },
+  'mz_uri':{
+    description: 'GeoJSON URL for place',
+    type: GraphQLString,
+    resolve:(obj) => obj['mz:uri']
   },
   'geometry':{
     description:'The Geometry',
     type: GeoJSON,
-    resolve:(obj) => fetchGeoJSON(obj['wof:id'])
+    resolve:(obj) => fetchGeoJSON(obj['wof:uri'])
   }
 }
 
@@ -279,7 +284,7 @@ const getCommonPlacetypes = ()=>{
   return WOFQuery(query).then((res)=>res.placetypes)
 }
 
-const resolveWOFURL = (id)=>{
+const resolveWOFGitHubURL = (id)=>{
   console.log('trying toresolve id', id)
   var sid  = String(id)
   var sid1 = sid.slice(0,3)
@@ -294,13 +299,13 @@ const fetchWOF = (root,query,placetype)=>{
   if(placetype){
     params.placetype=placetype
   }
-  params.extras='geom:latitude,geom:longitude,geom:area_square_m,geom:area,geom:bbox'
+  params.extras='geom:latitude,geom:longitude,geom:area_square_m,geom:area,geom:bbox,mz:uri'
   return WOFQuery(params).then(res=>res.places).then((res) =>{console.log(res); return res})
 }
 
-const fetchGeoJSON = (id)=>{
+const fetchGeoJSON = (url)=>{
   console.log('fetching geojson for ',id)
-  return fetch(resolveWOFURL(id)).then((res) => res.json()).then((res)=>res['geometry']).then((res)=>{
+  return fetch(url).then((res) => res.json()).then((res)=>res['geometry']).then((res)=>{
     console.log(res)
     return res
   })
