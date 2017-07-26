@@ -1,4 +1,4 @@
-# WOFGrpahQL
+# WOFGraphQL
 
 This is a proof of concept [GraphQL](http://graphql.org/) interface for [Who's On First](https://whosonfirst.mapzen.com/)
 
