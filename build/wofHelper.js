@@ -101,17 +101,24 @@ var WOFFields = {
     }
   },
   'git_url': {
-    description: 'latitude of the point',
+    description: 'Link to geojson on github',
     type: _graphql.GraphQLString,
     resolve: function resolve(obj) {
-      return resolveWOFURL(obj['wof:id']);
+      return resolveWOFGitHUbURL(obj['wof:id']);
+    }
+  },
+  'mz_uri': {
+    description: 'GeoJSON URL for place',
+    type: _graphql.GraphQLString,
+    resolve: function resolve(obj) {
+      return obj['mz:uri'];
     }
   },
   'geometry': {
     description: 'The Geometry',
     type: GeoJSON,
     resolve: function resolve(obj) {
-      return fetchGeoJSON(obj['wof:id']);
+      return fetchGeoJSON(obj['wof:uri']);
     }
   }
 };
@@ -294,7 +301,7 @@ var getCommonPlacetypes = function getCommonPlacetypes() {
   });
 };
 
-var resolveWOFURL = function resolveWOFURL(id) {
+var resolveWOFGitHubURL = function resolveWOFGitHubURL(id) {
   console.log('trying toresolve id', id);
   var sid = String(id);
   var sid1 = sid.slice(0, 3);
@@ -309,7 +316,7 @@ var fetchWOF = function fetchWOF(root, query, placetype) {
   if (placetype) {
     params.placetype = placetype;
   }
-  params.extras = 'geom:latitude,geom:longitude,geom:area_square_m,geom:area,geom:bbox';
+  params.extras = 'geom:latitude,geom:longitude,geom:area_square_m,geom:area,geom:bbox,mz:uri';
   return WOFQuery(params).then(function (res) {
     return res.places;
   }).then(function (res) {
@@ -317,9 +324,9 @@ var fetchWOF = function fetchWOF(root, query, placetype) {
   });
 };
 
-var fetchGeoJSON = function fetchGeoJSON(id) {
+var fetchGeoJSON = function fetchGeoJSON(url) {
   console.log('fetching geojson for ', id);
-  return fetch(resolveWOFURL(id)).then(function (res) {
+  return fetch(url).then(function (res) {
     return res.json();
   }).then(function (res) {
     return res['geometry'];
