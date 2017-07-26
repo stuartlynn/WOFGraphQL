@@ -102,7 +102,7 @@ const WOFFields = {
   'geometry':{
     description:'The Geometry',
     type: GeoJSON,
-    resolve:(obj) => fetchGeoJSON(obj['wof:uri'])
+    resolve:(obj) => fetchGeoJSON(obj['mz:uri'])
   }
 }
 

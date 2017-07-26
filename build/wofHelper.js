@@ -118,7 +118,7 @@ var WOFFields = {
     description: 'The Geometry',
     type: GeoJSON,
     resolve: function resolve(obj) {
-      return fetchGeoJSON(obj['wof:uri']);
+      return fetchGeoJSON(obj['mz:uri']);
     }
   }
 };
